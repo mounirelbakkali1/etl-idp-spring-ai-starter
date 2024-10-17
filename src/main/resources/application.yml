@@ -1,0 +1,63 @@
+server:
+  servlet:
+    context-path: /api
+  port: 8087
+
+spring:
+  application:
+    name: IntelligentDocumentReader
+  datasource:
+    url: jdbc:h2:mem:DOC_LOG_DB;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driverClassName: org.h2.Driver
+    username: root
+    password:
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+  h2:
+    console:
+      enabled: true
+      path: /h2
+
+  neo4j:
+    uri: neo4j://localhost:7687
+    authentication:
+      username: admin
+      password: MyStrongPassword
+
+  ai:
+    vectorstore:
+      neo4j:
+        label: Document
+        initialize-schema: false
+        database-name: docprocessingvectorstore
+    openai:
+      api-key: ${SPRING_AI_OPENAI_API_KEY}
+    embedding:
+      transformer:
+        onnx:
+          model-uri: https://huggingface.co/intfloat/e5-small-v2/resolve/main/model.onnx
+        tokenizer:
+          uri: https://huggingface.co/intfloat/e5-small-v2/raw/main/tokenizer.json
+
+
+
+
+aws:
+  s3:
+    bucketName: ${S3_BUCKET_NAME}
+    region: "us-east-1"
+
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+transformer:
+  url: http://localhost:5000/embed
+
+document:
+  transformer:
+    mocked: true
+
